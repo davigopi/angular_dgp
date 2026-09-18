@@ -1,0 +1,90 @@
+<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 30px auto; padding: 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: #ffffff;">
+
+  <h2 style="margin-top: 0; color: #1a1a1a;">{{ titulo }}</h2>
+
+  <!-- Dashboard / Progresso -->
+  <div style="margin-bottom: 20px; background: #f8f9fa; padding: 12px; border-radius: 8px;">
+    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
+      <span><strong>Progresso:</strong> {{ totalConcluidas }} de {{ tarefas.length }} concluídas</span>
+      <span><strong>{{ percentualConcluido }}%</strong></span>
+    </div>
+    <div style="width: 100%; background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+      <div [style.width.%]="percentualConcluido" style="background: #2e7d32; height: 100%; transition: width 0.3s ease;"></div>
+    </div>
+  </div>
+
+  <!-- Formulário de Entrada -->
+  <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+    <input
+      type="text"
+      [(ngModel)]="novoTitulo"
+      (keyup.enter)="adicionarTarefa()"
+      placeholder="O que precisa ser feito?"
+      style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 6px;"
+    />
+    <select [(ngModel)]="novaPrioridade" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white;">
+      <option value="Baixa">Baixa</option>
+      <option value="Média">Média</option>
+      <option value="Alta">Alta</option>
+    </select>
+    <button (click)="adicionarTarefa()" style="padding: 10px 16px; background: #0066cc; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+      Adicionar
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+    <div style="display: flex; gap: 6px;">
+      <button (click)="filtroAtual = 'todas'" [style.font-weight]="filtroAtual === 'todas' ? 'bold' : 'normal'" style="border: none; background: none; cursor: pointer;">Todas</button> |
+      <button (click)="filtroAtual = 'pendentes'" [style.font-weight]="filtroAtual === 'pendentes' ? 'bold' : 'normal'" style="border: none; background: none; cursor: pointer;">Pendentes</button> |
+      <button (click)="filtroAtual = 'concluidas'" [style.font-weight]="filtroAtual === 'concluidas' ? 'bold' : 'normal'" style="border: none; background: none; cursor: pointer;">Concluídas</button>
+    </div>
+    <button (click)="limparConcluidas()" *ngIf="totalConcluidas > 0" style="color: #d32f2f; border: none; background: none; cursor: pointer; font-size: 12px;">
+      Limpar Concluídas
+    </button>
+  </div>
+
+  <!-- Mensagem de Lista Vazia -->
+  <p *ngIf="tarefasFiltradas.length === 0" style="color: #888; text-align: center; font-style: italic; margin: 30px 0;">
+    Nenhuma tarefa encontrada neste filtro.
+  </p>
+
+  <!-- Lista de Tarefas -->
+  <ul style="list-style: none; padding: 0; margin: 0;">
+    <li *ngFor="let item of tarefasFiltradas" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0;">
+
+      <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+        <input
+          type="checkbox"
+          [checked]="item.concluida"
+          (change)="alternarStatus(item.id)"
+          style="cursor: pointer; width: 18px; height: 18px;"
+        />
+
+        <div>
+          <span [style.text-decoration]="item.concluida ? 'line-through' : 'none'" [style.color]="item.concluida ? '#888' : '#333'" style="font-size: 15px;">
+            {{ item.titulo }}
+          </span>
+          <div style="font-size: 11px; color: #aaa;">
+            Criado em: {{ item.dataCriacao }}
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <!-- Tag de Prioridade -->
+        <span [style.background-color]="item.prioridade === 'Alta' ? '#ffebee' : item.prioridade === 'Média' ? '#fff3e0' : '#e8f5e9'"
+              [style.color]="item.prioridade === 'Alta' ? '#c62828' : item.prioridade === 'Média' ? '#ef6c00' : '#2e7d32'"
+              style="padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">
+          {{ item.prioridade }}
+        </span>
+
+        <button (click)="removerTarefa(item.id)" style="color: #d32f2f; border: none; background: none; cursor: pointer; font-size: 16px; font-weight: bold;">
+          ✕
+        </button>
+      </div>
+
+    </li>
+  </ul>
+
+</div>
